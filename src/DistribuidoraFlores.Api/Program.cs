@@ -6,6 +6,9 @@ using DistribuidoraFlores.Api.Modules.Catalogo.Infrastructure;
 using DistribuidoraFlores.Api.Modules.Clientes.Application.Interfaces;
 using DistribuidoraFlores.Api.Modules.Clientes.Application.UseCases;
 using DistribuidoraFlores.Api.Modules.Clientes.Infrastructure;
+using DistribuidoraFlores.Api.Modules.Pedidos.Application.Interfaces;
+using DistribuidoraFlores.Api.Modules.Pedidos.Application.UseCases;
+using DistribuidoraFlores.Api.Modules.Pedidos.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,13 @@ builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<CadastrarClienteUseCase>();
 builder.Services.AddScoped<AtivarClienteUseCase>();
 builder.Services.AddScoped<DesativarClienteUseCase>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+builder.Services.AddScoped<CriarPedidoUseCase>();
+builder.Services.AddScoped<AprovarPedidoUseCase>();
+builder.Services.AddScoped<MarcarPedidoSeparadoUseCase>();
+builder.Services.AddScoped<MarcarPedidoEmRotaUseCase>();
+builder.Services.AddScoped<MarcarPedidoEntregueUseCase>();
+builder.Services.AddScoped<CancelarPedidoUseCase>();
 
 var app = builder.Build();
 

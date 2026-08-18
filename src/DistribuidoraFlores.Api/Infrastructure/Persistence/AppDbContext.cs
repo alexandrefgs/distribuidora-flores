@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using DistribuidoraFlores.Api.Modules.Catalogo.Domain;
 using DistribuidoraFlores.Api.Modules.Clientes.Domain;
+using DistribuidoraFlores.Api.Modules.Pedidos.Domain;
 
 namespace DistribuidoraFlores.Api.Infrastructure.Persistence;
 
@@ -11,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Produto> Produtos => Set<Produto>();
     public DbSet<Lote> Lotes => Set<Lote>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
+    public DbSet<Pedido> Pedidos => Set<Pedido>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +55,26 @@ public class AppDbContext : DbContext
 
                 documento.HasIndex(d => d.Numero).IsUnique();
             });
+        });
+
+        modelBuilder.Entity<Pedido>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Id).ValueGeneratedNever();
+            entity.Property(p => p.Status).HasConversion<string>();
+            entity.Ignore(p => p.Total); // calculado em memória, não persiste
+
+            entity.HasMany(p => p.Itens)
+                  .WithOne()
+                  .HasForeignKey(i => i.PedidoId);
+        });
+
+        modelBuilder.Entity<ItemPedido>(entity =>
+        {
+            entity.HasKey(i => i.Id);
+            entity.Property(i => i.Id).ValueGeneratedNever();
+            entity.Property(i => i.NomeProduto).IsRequired().HasMaxLength(200);
+            entity.Property(i => i.PrecoUnitario).HasColumnType("decimal(10,2)");
         });
 
         base.OnModelCreating(modelBuilder);
