@@ -5,6 +5,7 @@
 ![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10-6DB33F?style=for-the-badge&logo=nuget&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Express-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![Angular](https://img.shields.io/badge/Angular-planejado-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-46%20passing-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge)
 
 Marketplace B2B com ERP embutido, conectando uma distribuidora de flores a comerciantes (floriculturas). Permite que comerciantes façam pedidos direto do catálogo do distribuidor, enquanto o distribuidor gerencia estoque (com controle de validade), pedidos recebidos e clientes através do módulo de ERP.
@@ -38,16 +39,31 @@ Modules/
 | Módulo | Status | Descrição |
 |---|---|---|
 | **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade e cálculo automático de disponibilidade |
-| **Clientes** | 🔜 Planejado | Cadastro e aprovação de comerciantes |
-| **Pedidos** | 🔜 Planejado | Pedidos, itens e acompanhamento de status |
-| **Frota** | 🔜 Planejado (v2) | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista |
+| **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
+| **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
+| **Frota** | 🔜 Em andamento | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
 
 ## ✨ Funcionalidades implementadas
 
+**Catalogo**
 - Cadastro de produtos (nome, categoria, unidade de medida, preço)
 - Cadastro de lotes por produto, com data de validade
 - Cálculo automático de disponibilidade, considerando apenas lotes ainda válidos
+
+**Clientes**
+- Cadastro de comerciante (pessoa física ou jurídica) com validação real de CPF/CNPJ, incluindo dígito verificador
+- Bloqueio de documentos duplicados (checagem na aplicação + constraint única no banco)
+- Ativação/desativação de clientes
+
+**Pedidos**
+- Criação de pedido orquestrando os módulos Clientes e Catalogo
+- Preço e nome do produto "congelados" no momento da compra (não mudam se o catálogo mudar depois)
+- Sinalização de estoque insuficiente sem bloquear a criação do pedido
+- Máquina de estados: Pendente → Aprovado → Separado → Em Rota → Entregue, com Cancelado em etapas iniciais
+
+**Geral**
 - API REST documentada via Swagger
+- Suíte de testes automatizados: 46 testes (unitários de domínio + integração via HTTP)
 
 ## 🛠️ Tecnologias
 
@@ -56,6 +72,20 @@ Modules/
 - **Clean Architecture** por módulo
 - **Swagger / Swashbuckle** para documentação da API
 - **Angular** (planejado para o frontend)
+
+## 🧪 Testes
+
+O projeto conta com uma suíte de 46 testes automatizados, dividida em dois níveis:
+
+- **Testes unitários** — cobrem regras de negócio isoladas do Domain (validação de CPF/CNPJ com dígito verificador, cálculo de disponibilidade de estoque, máquina de estados do pedido), sem depender de banco de dados.
+- **Testes de integração** — sobem a API completa em memória (`WebApplicationFactory`) com um banco SQLite temporário, testando os fluxos principais via requisições HTTP reais, do mesmo jeito que um cliente consumiria a API.
+
+Para rodar:
+
+```bash
+cd tests/DistribuidoraFlores.Tests
+dotnet test
+```
 
 ## 🚀 Como rodar localmente
 
@@ -84,11 +114,13 @@ A API sobe em `http://localhost:5014` (ou porta configurada) e redireciona autom
 
 ## 🗺️ Roadmap
 
-- [ ] Módulo de Clientes (cadastro e aprovação de comerciantes)
-- [ ] Módulo de Pedidos (fluxo completo: criação → aprovação → separação → entrega)
+- [x] Módulo de Clientes (cadastro com validação de CPF/CNPJ)
+- [x] Módulo de Pedidos (fluxo completo: criação → aprovação → separação → em rota → entrega)
+- [x] Suíte de testes automatizados (unitários + integração)
+- [ ] Módulo de Frota (veículos, motoristas, entregas)
 - [ ] Autenticação e autorização (distinção entre usuário admin/distribuidor e comerciante)
 - [ ] Frontend em Angular
-- [ ] v2: módulo de Frota com rastreio de veículos e app para motoristas
+- [ ] v2: rastreio de veículos em tempo real e app para motoristas
 
 ## 📄 Licença
 
