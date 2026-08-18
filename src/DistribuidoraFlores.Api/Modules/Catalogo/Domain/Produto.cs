@@ -12,7 +12,12 @@ public class Produto
     private readonly List<Lote> _lotes = new();
     public IReadOnlyCollection<Lote> Lotes => _lotes.AsReadOnly();
 
-    protected Produto() { } // EF Core precisa de um construtor vazio
+    protected Produto()
+    {
+        Nome = null!;
+        Categoria = null!;
+        UnidadeMedida = null!;
+    }
 
     public Produto(string nome, string categoria, string unidadeMedida, decimal precoUnitario)
     {

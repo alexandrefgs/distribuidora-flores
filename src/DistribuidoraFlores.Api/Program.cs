@@ -1,14 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using DistribuidoraFlores.Api.Infrastructure.Persistence;
-using DistribuidoraFlores.Api.Modules.Catalogo.Application.Interfaces;
-using DistribuidoraFlores.Api.Modules.Catalogo.Application.UseCases;
-using DistribuidoraFlores.Api.Modules.Catalogo.Infrastructure;
-using DistribuidoraFlores.Api.Modules.Clientes.Application.Interfaces;
-using DistribuidoraFlores.Api.Modules.Clientes.Application.UseCases;
-using DistribuidoraFlores.Api.Modules.Clientes.Infrastructure;
-using DistribuidoraFlores.Api.Modules.Pedidos.Application.Interfaces;
-using DistribuidoraFlores.Api.Modules.Pedidos.Application.UseCases;
-using DistribuidoraFlores.Api.Modules.Pedidos.Infrastructure;
+using DistribuidoraFlores.Api.Modules.Catalogo;
+using DistribuidoraFlores.Api.Modules.Clientes;
+using DistribuidoraFlores.Api.Modules.Pedidos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,26 +14,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Banco de dados
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
-// Módulo Catalogo — Repositórios
-builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-
-// Módulo Catalogo — Casos de uso
-builder.Services.AddScoped<CriarProdutoUseCase>();
-builder.Services.AddScoped<AdicionarLoteUseCase>();
-builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
-builder.Services.AddScoped<CadastrarClienteUseCase>();
-builder.Services.AddScoped<AtivarClienteUseCase>();
-builder.Services.AddScoped<DesativarClienteUseCase>();
-builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
-builder.Services.AddScoped<CriarPedidoUseCase>();
-builder.Services.AddScoped<AprovarPedidoUseCase>();
-builder.Services.AddScoped<MarcarPedidoSeparadoUseCase>();
-builder.Services.AddScoped<MarcarPedidoEmRotaUseCase>();
-builder.Services.AddScoped<MarcarPedidoEntregueUseCase>();
-builder.Services.AddScoped<CancelarPedidoUseCase>();
+// Módulos
+builder.Services
+    .AddCatalogoModule()
+    .AddClientesModule()
+    .AddPedidosModule();
 
 var app = builder.Build();
 
@@ -55,3 +40,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
