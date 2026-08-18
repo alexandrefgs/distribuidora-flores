@@ -3,6 +3,9 @@ using DistribuidoraFlores.Api.Infrastructure.Persistence;
 using DistribuidoraFlores.Api.Modules.Catalogo.Application.Interfaces;
 using DistribuidoraFlores.Api.Modules.Catalogo.Application.UseCases;
 using DistribuidoraFlores.Api.Modules.Catalogo.Infrastructure;
+using DistribuidoraFlores.Api.Modules.Clientes.Application.Interfaces;
+using DistribuidoraFlores.Api.Modules.Clientes.Application.UseCases;
+using DistribuidoraFlores.Api.Modules.Clientes.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,10 @@ builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 // Módulo Catalogo — Casos de uso
 builder.Services.AddScoped<CriarProdutoUseCase>();
 builder.Services.AddScoped<AdicionarLoteUseCase>();
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<CadastrarClienteUseCase>();
+builder.Services.AddScoped<AtivarClienteUseCase>();
+builder.Services.AddScoped<DesativarClienteUseCase>();
 
 var app = builder.Build();
 
