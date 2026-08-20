@@ -41,7 +41,7 @@ Modules/
 | **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade e cálculo automático de disponibilidade |
 | **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
 | **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
-| **Frota** | 🔜 Em andamento | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
+| **Frota** | ✅ Implementado | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
 
 ## ✨ Funcionalidades implementadas
 
