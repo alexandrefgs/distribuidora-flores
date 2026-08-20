@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Xunit;
+using DistribuidoraFlores.Api.Modules.Identidade.Domain;
 
 namespace DistribuidoraFlores.Tests.Integration;
 
@@ -11,7 +12,7 @@ public class ClientesIntegrationTests : IClassFixture<CustomWebApplicationFactor
 
     public ClientesIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient(Role.Admin);
     }
 
     [Fact]
@@ -44,7 +45,7 @@ public class ClientesIntegrationTests : IClassFixture<CustomWebApplicationFactor
         var request = new
         {
             nomeFantasia = "Floricultura X",
-            documento = "648.256.870-08", // CPF válido diferente do teste anterior
+            documento = "648.256.870-08",
             telefone = "47988888888",
             email = "x@x.com",
             endereco = "Rua X, 1"
@@ -78,7 +79,7 @@ public class ClientesIntegrationTests : IClassFixture<CustomWebApplicationFactor
         var request = new
         {
             nomeFantasia = "Floricultura Teste",
-            documento = "111.444.777-35", // CPF válido
+            documento = "111.444.777-35",
             telefone = "47977777777",
             email = "teste@teste.com",
             endereco = "Rua Teste, 1"

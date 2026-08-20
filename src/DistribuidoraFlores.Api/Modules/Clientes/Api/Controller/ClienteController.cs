@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DistribuidoraFlores.Api.Modules.Clientes.Api.DTOs;
 using DistribuidoraFlores.Api.Modules.Clientes.Application.Interfaces;
@@ -7,6 +8,7 @@ namespace DistribuidoraFlores.Api.Modules.Clientes.Api.Controllers;
 
 [ApiController]
 [Route("api/clientes")]
+[Authorize]
 public class ClienteController : ControllerBase
 {
     private readonly CadastrarClienteUseCase _cadastrarClienteUseCase;
@@ -27,6 +29,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Cadastrar([FromBody] CadastrarClienteRequest request)
     {
         try
@@ -54,6 +57,9 @@ public class ClienteController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> ObterPorId(Guid id)
     {
+        if (!PodeAcessarCliente(id))
+            return Forbid();
+
         var cliente = await _clienteRepository.ObterPorIdAsync(id);
 
         if (cliente is null)
@@ -63,6 +69,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Listar()
     {
         var clientes = await _clienteRepository.ListarAtivosAsync();
@@ -70,6 +77,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/ativar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Ativar(Guid id)
     {
         try
@@ -84,6 +92,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/desativar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Desativar(Guid id)
     {
         try
@@ -95,5 +104,15 @@ public class ClienteController : ControllerBase
         {
             return NotFound(new { erro = ex.Message });
         }
+    }
+
+    // Admin pode acessar qualquer cliente; Comerciante só o próprio (via clienteId do token)
+    private bool PodeAcessarCliente(Guid clienteId)
+    {
+        if (User.IsInRole("Admin"))
+            return true;
+
+        var clienteIdClaim = User.FindFirst("clienteId")?.Value;
+        return clienteIdClaim is not null && Guid.TryParse(clienteIdClaim, out var idDoToken) && idDoToken == clienteId;
     }
 }
