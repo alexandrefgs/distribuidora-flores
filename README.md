@@ -5,7 +5,7 @@
 ![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10-6DB33F?style=for-the-badge&logo=nuget&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Express-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![Angular](https://img.shields.io/badge/Angular-planejado-DD0031?style=for-the-badge&logo=angular&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-46%20passing-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-55%20passing-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge)
 
 Marketplace B2B com ERP embutido, conectando uma distribuidora de flores a comerciantes (floriculturas). Permite que comerciantes façam pedidos direto do catálogo do distribuidor, enquanto o distribuidor gerencia estoque (com controle de validade), pedidos recebidos e clientes através do módulo de ERP.
@@ -41,7 +41,7 @@ Modules/
 | **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade e cálculo automático de disponibilidade |
 | **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
 | **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
-| **Frota** | ✅ Implementado | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
+| **Frota** | ✅ Implementado | Veículos, motoristas e entregas, orquestrando com Pedidos — base para rastreio em tempo real e app do motorista (v2) |
 
 ## ✨ Funcionalidades implementadas
 
@@ -75,7 +75,7 @@ Modules/
 
 ## 🧪 Testes
 
-O projeto conta com uma suíte de 46 testes automatizados, dividida em dois níveis:
+O projeto conta com uma suíte de 55 testes automatizados, dividida em dois níveis:
 
 - **Testes unitários** — cobrem regras de negócio isoladas do Domain (validação de CPF/CNPJ com dígito verificador, cálculo de disponibilidade de estoque, máquina de estados do pedido), sem depender de banco de dados.
 - **Testes de integração** — sobem a API completa em memória (`WebApplicationFactory`) com um banco SQLite temporário, testando os fluxos principais via requisições HTTP reais, do mesmo jeito que um cliente consumiria a API.
