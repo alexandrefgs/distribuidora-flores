@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DistribuidoraFlores.Api.Modules.Frota.Api.DTOs;
 using DistribuidoraFlores.Api.Modules.Frota.Application.Interfaces;
@@ -7,6 +8,7 @@ namespace DistribuidoraFlores.Api.Modules.Frota.Api.Controllers;
 
 [ApiController]
 [Route("api/veiculos")]
+[Authorize(Roles = "Admin")]
 public class VeiculoController : ControllerBase
 {
     private readonly CadastrarVeiculoUseCase _cadastrarVeiculoUseCase;

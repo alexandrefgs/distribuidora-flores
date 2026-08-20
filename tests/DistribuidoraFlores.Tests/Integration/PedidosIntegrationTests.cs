@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Xunit;
+using DistribuidoraFlores.Api.Modules.Identidade.Domain;
 
 namespace DistribuidoraFlores.Tests.Integration;
 
@@ -11,7 +12,7 @@ public class PedidosIntegrationTests : IClassFixture<CustomWebApplicationFactory
 
     public PedidosIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient(Role.Admin);
     }
 
     [Fact]
@@ -105,13 +106,7 @@ public class PedidosIntegrationTests : IClassFixture<CustomWebApplicationFactory
 
     private async Task<Guid> CriarProdutoComEstoqueAsync(int quantidadeEmEstoque = 50)
     {
-        var produtoRequest = new
-        {
-            nome = "Rosa Vermelha",
-            categoria = "Flor",
-            unidadeMedida = "unidade",
-            precoUnitario = 5.50m
-        };
+        var produtoRequest = new { nome = "Rosa Vermelha", categoria = "Flor", unidadeMedida = "unidade", precoUnitario = 5.50m };
 
         var respostaProduto = await _client.PostAsJsonAsync("/api/produtos", produtoRequest);
         var produtoCriado = await respostaProduto.Content.ReadFromJsonAsync<CriadoResponse>();

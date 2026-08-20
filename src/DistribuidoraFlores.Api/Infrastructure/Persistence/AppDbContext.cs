@@ -3,6 +3,7 @@ using DistribuidoraFlores.Api.Modules.Catalogo.Domain;
 using DistribuidoraFlores.Api.Modules.Clientes.Domain;
 using DistribuidoraFlores.Api.Modules.Pedidos.Domain;
 using DistribuidoraFlores.Api.Modules.Frota.Domain;
+using DistribuidoraFlores.Api.Modules.Identidade.Domain;
 
 namespace DistribuidoraFlores.Api.Infrastructure.Persistence;
 
@@ -17,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<Veiculo> Veiculos => Set<Veiculo>();
     public DbSet<Motorista> Motoristas => Set<Motorista>();
     public DbSet<Entrega> Entregas => Set<Entrega>();
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -106,6 +108,17 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Status).HasConversion<string>();
+        });
+
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Id).ValueGeneratedNever();
+            entity.Property(u => u.Email).IsRequired().HasMaxLength(200);
+            entity.Property(u => u.SenhaHash).IsRequired();
+            entity.Property(u => u.Role).HasConversion<string>();
+
+            entity.HasIndex(u => u.Email).IsUnique();
         });
 
         base.OnModelCreating(modelBuilder);

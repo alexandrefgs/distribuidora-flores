@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DistribuidoraFlores.Api.Modules.Catalogo.Api.DTOs;
 using DistribuidoraFlores.Api.Modules.Catalogo.Application.Interfaces;
@@ -7,6 +8,7 @@ namespace DistribuidoraFlores.Api.Modules.Catalogo.Api.Controllers;
 
 [ApiController]
 [Route("api/produtos")]
+[Authorize]
 public class ProdutoController : ControllerBase
 {
     private readonly CriarProdutoUseCase _criarProdutoUseCase;
@@ -24,6 +26,7 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Criar([FromBody] CriarProdutoRequest request)
     {
         try
@@ -62,6 +65,7 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpPost("{id:guid}/lotes")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AdicionarLote(Guid id, [FromBody] AdicionarLoteRequest request)
     {
         try

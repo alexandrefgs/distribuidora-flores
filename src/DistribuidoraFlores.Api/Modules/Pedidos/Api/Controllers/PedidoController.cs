@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DistribuidoraFlores.Api.Modules.Pedidos.Api.DTOs;
 using DistribuidoraFlores.Api.Modules.Pedidos.Application.DTOs;
@@ -8,6 +9,7 @@ namespace DistribuidoraFlores.Api.Modules.Pedidos.Api.Controllers;
 
 [ApiController]
 [Route("api/pedidos")]
+[Authorize]
 public class PedidoController : ControllerBase
 {
     private readonly CriarPedidoUseCase _criarPedidoUseCase;
@@ -37,15 +39,18 @@ public class PedidoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Comerciante")]
     public async Task<IActionResult> Criar([FromBody] CriarPedidoRequest request)
     {
         try
         {
+            var clienteId = ResolverClienteId(request.ClienteId);
+
             var itens = request.Itens
                 .Select(i => new ItemPedidoInput(i.ProdutoId, i.Quantidade))
                 .ToList();
 
-            var id = await _criarPedidoUseCase.ExecutarAsync(request.ClienteId, itens);
+            var id = await _criarPedidoUseCase.ExecutarAsync(clienteId, itens);
 
             return CreatedAtAction(nameof(ObterPorId), new { id }, new { id });
         }
@@ -57,6 +62,23 @@ public class PedidoController : ControllerBase
         {
             return UnprocessableEntity(new { erro = ex.Message });
         }
+    }
+
+    // Se for Comerciante, ignora o clienteId do body e usa o do token.
+    // Se for Admin, usa o clienteId informado no body.
+    private Guid ResolverClienteId(Guid clienteIdDoBody)
+    {
+        var isComerciante = User.IsInRole("Comerciante");
+
+        if (!isComerciante)
+            return clienteIdDoBody;
+
+        var clienteIdClaim = User.FindFirst("clienteId")?.Value;
+
+        if (string.IsNullOrEmpty(clienteIdClaim) || !Guid.TryParse(clienteIdClaim, out var clienteId))
+            throw new InvalidOperationException("Token não contém um clienteId válido.");
+
+        return clienteId;
     }
 
     [HttpGet("{id:guid}")]
@@ -71,6 +93,7 @@ public class PedidoController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Listar()
     {
         var pedidos = await _pedidoRepository.ListarTodosAsync();
@@ -85,15 +108,19 @@ public class PedidoController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/aprovar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Aprovar(Guid id) => await ExecutarTransicao(() => _aprovarPedidoUseCase.ExecutarAsync(id));
 
     [HttpPatch("{id:guid}/separar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Separar(Guid id) => await ExecutarTransicao(() => _marcarPedidoSeparadoUseCase.ExecutarAsync(id));
 
     [HttpPatch("{id:guid}/em-rota")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> EmRota(Guid id) => await ExecutarTransicao(() => _marcarPedidoEmRotaUseCase.ExecutarAsync(id));
 
     [HttpPatch("{id:guid}/entregar")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Entregar(Guid id) => await ExecutarTransicao(() => _marcarPedidoEntregueUseCase.ExecutarAsync(id));
 
     [HttpPatch("{id:guid}/cancelar")]

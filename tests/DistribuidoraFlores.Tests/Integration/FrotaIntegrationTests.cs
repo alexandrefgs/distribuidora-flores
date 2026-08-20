@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Xunit;
+using DistribuidoraFlores.Api.Modules.Identidade.Domain;
 
 namespace DistribuidoraFlores.Tests.Integration;
 
@@ -11,7 +12,7 @@ public class FrotaIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 
     public FrotaIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateAuthenticatedClient(Role.Admin);
     }
 
     [Fact]
