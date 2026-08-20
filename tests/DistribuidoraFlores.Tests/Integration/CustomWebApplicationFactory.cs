@@ -56,7 +56,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
             ? Usuario.CriarAdmin("admin-teste@teste.com", "hash-nao-usado")
             : Usuario.CriarComerciante("comerciante-teste@teste.com", "hash-nao-usado", clienteId ?? Guid.NewGuid());
 
-        var token = tokenService.GerarToken(usuario);
+        var token = tokenService.GerarAccessToken(usuario);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         return client;

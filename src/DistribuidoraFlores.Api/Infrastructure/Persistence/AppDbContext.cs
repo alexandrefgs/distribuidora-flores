@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Motorista> Motoristas => Set<Motorista>();
     public DbSet<Entrega> Entregas => Set<Entrega>();
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -119,6 +120,15 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Role).HasConversion<string>();
 
             entity.HasIndex(u => u.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+            entity.Property(rt => rt.Id).ValueGeneratedNever();
+            entity.Property(rt => rt.TokenHash).IsRequired();
+
+            entity.HasIndex(rt => rt.TokenHash).IsUnique();
         });
 
         base.OnModelCreating(modelBuilder);

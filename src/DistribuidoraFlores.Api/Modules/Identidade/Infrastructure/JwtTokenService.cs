@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using DistribuidoraFlores.Api.Modules.Identidade.Application.Interfaces;
@@ -16,7 +17,7 @@ public class JwtTokenService : ITokenService
         _configuration = configuration;
     }
 
-    public string GerarToken(Usuario usuario)
+    public string GerarAccessToken(Usuario usuario)
     {
         var chave = _configuration["Jwt:ChaveSecreta"]
             ?? throw new InvalidOperationException("Chave JWT não configurada.");
@@ -39,9 +40,22 @@ public class JwtTokenService : ITokenService
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(8),
+            expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: credenciais);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string GerarRefreshTokenBruto()
+    {
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        return Convert.ToBase64String(bytes);
+    }
+
+    public string HashRefreshToken(string tokenBruto)
+    {
+        var bytes = Encoding.UTF8.GetBytes(tokenBruto);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToBase64String(hash);
     }
 }

@@ -9,11 +9,13 @@ public static class IdentidadeModuleExtensions
     public static IServiceCollection AddIdentidadeModule(this IServiceCollection services)
     {
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<ITokenService, JwtTokenService>();
 
         services.AddScoped<RegistrarComercianteUseCase>();
         services.AddScoped<LoginUseCase>();
+        services.AddScoped<RefreshTokenUseCase>();
 
         return services;
     }

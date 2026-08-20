@@ -4,5 +4,7 @@ namespace DistribuidoraFlores.Api.Modules.Identidade.Application.Interfaces;
 
 public interface ITokenService
 {
-    string GerarToken(Usuario usuario);
+    string GerarAccessToken(Usuario usuario);
+    string GerarRefreshTokenBruto(); // string aleatória, antes do hash
+    string HashRefreshToken(string tokenBruto);
 }
