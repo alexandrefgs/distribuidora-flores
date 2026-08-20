@@ -117,7 +117,7 @@ A API sobe em `http://localhost:5014` (ou porta configurada) e redireciona autom
 - [x] Módulo de Clientes (cadastro com validação de CPF/CNPJ)
 - [x] Módulo de Pedidos (fluxo completo: criação → aprovação → separação → em rota → entrega)
 - [x] Suíte de testes automatizados (unitários + integração)
-- [ ] Módulo de Frota (veículos, motoristas, entregas)
+- [x] Módulo de Frota (veículos, motoristas, entregas)
 - [ ] Autenticação e autorização (distinção entre usuário admin/distribuidor e comerciante)
 - [ ] Frontend em Angular
 - [ ] v2: rastreio de veículos em tempo real e app para motoristas
