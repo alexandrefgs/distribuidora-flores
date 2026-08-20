@@ -41,7 +41,7 @@ Modules/
 | **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade e cálculo automático de disponibilidade |
 | **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
 | **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
-| **Frota** | 🔜 Em andamento | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
+| **Frota** | ✅ Implementado | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
 
 ## ✨ Funcionalidades implementadas
 
@@ -117,7 +117,7 @@ A API sobe em `http://localhost:5014` (ou porta configurada) e redireciona autom
 - [x] Módulo de Clientes (cadastro com validação de CPF/CNPJ)
 - [x] Módulo de Pedidos (fluxo completo: criação → aprovação → separação → em rota → entrega)
 - [x] Suíte de testes automatizados (unitários + integração)
-- [ ] Módulo de Frota (veículos, motoristas, entregas)
+- [x] Módulo de Frota (veículos, motoristas, entregas)
 - [ ] Autenticação e autorização (distinção entre usuário admin/distribuidor e comerciante)
 - [ ] Frontend em Angular
 - [ ] v2: rastreio de veículos em tempo real e app para motoristas
