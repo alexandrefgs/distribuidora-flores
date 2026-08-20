@@ -3,6 +3,7 @@ using DistribuidoraFlores.Api.Infrastructure.Persistence;
 using DistribuidoraFlores.Api.Modules.Catalogo;
 using DistribuidoraFlores.Api.Modules.Clientes;
 using DistribuidoraFlores.Api.Modules.Pedidos;
+using DistribuidoraFlores.Api.Modules.Frota;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,8 @@ if (!builder.Environment.IsEnvironment("Testing"))
 builder.Services
     .AddCatalogoModule()
     .AddClientesModule()
-    .AddPedidosModule();
+    .AddPedidosModule()
+    .AddFrotaModule();
 
 var app = builder.Build();
 
