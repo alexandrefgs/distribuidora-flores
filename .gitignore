@@ -35,3 +35,10 @@
 ## appsettings sensíveis (mantém o padrão versionado, ignora o local se você criar um)
 appsettings.local.json
 appsettings.*.local.json
+
+## Angular / Node (pasta web/)
+node_modules/
+dist/
+.angular/
+*.tsbuildinfo
+npm-debug.log*

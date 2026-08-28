@@ -20,6 +20,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS — permite o frontend Angular (rodando em outra porta) chamar esta API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Banco de dados
 if (!builder.Environment.IsEnvironment("Testing"))
 {
@@ -71,6 +82,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("PermitirAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
