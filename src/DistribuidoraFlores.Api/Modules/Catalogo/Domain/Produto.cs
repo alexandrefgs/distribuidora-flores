@@ -8,6 +8,7 @@ public class Produto
     public string UnidadeMedida { get; private set; } // ex: "maço", "unidade", "dúzia"
     public decimal PrecoUnitario { get; private set; }
     public bool Ativo { get; private set; }
+    public string? ImagemUrl { get; private set; }
 
     private readonly List<Lote> _lotes = new();
     public IReadOnlyCollection<Lote> Lotes => _lotes.AsReadOnly();
@@ -50,5 +51,13 @@ public class Produto
     public void Desativar()
     {
         Ativo = false;
+    }
+
+    public void DefinirImagem(string imagemUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imagemUrl))
+            throw new ArgumentException("URL da imagem inválida.");
+
+        ImagemUrl = imagemUrl;
     }
 }

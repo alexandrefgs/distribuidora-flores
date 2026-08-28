@@ -29,6 +29,7 @@ public class AppDbContext : DbContext
             entity.Property(p => p.Id).ValueGeneratedNever();
             entity.Property(p => p.Nome).IsRequired().HasMaxLength(200);
             entity.Property(p => p.PrecoUnitario).HasColumnType("decimal(10,2)");
+            entity.Property(p => p.ImagemUrl).HasMaxLength(500);
 
             entity.HasMany(p => p.Lotes)
                   .WithOne()

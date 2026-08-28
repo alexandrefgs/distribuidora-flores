@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DistribuidoraFlores.Api.Modules.Catalogo.Api.DTOs;
 using DistribuidoraFlores.Api.Modules.Catalogo.Application.Interfaces;
@@ -13,16 +14,22 @@ public class ProdutoController : ControllerBase
 {
     private readonly CriarProdutoUseCase _criarProdutoUseCase;
     private readonly AdicionarLoteUseCase _adicionarLoteUseCase;
+    private readonly DefinirImagemProdutoUseCase _definirImagemProdutoUseCase;
     private readonly IProdutoRepository _produtoRepository;
+    private readonly IWebHostEnvironment _ambiente;
 
     public ProdutoController(
         CriarProdutoUseCase criarProdutoUseCase,
         AdicionarLoteUseCase adicionarLoteUseCase,
-        IProdutoRepository produtoRepository)
+        DefinirImagemProdutoUseCase definirImagemProdutoUseCase,
+        IProdutoRepository produtoRepository,
+        IWebHostEnvironment ambiente)
     {
         _criarProdutoUseCase = criarProdutoUseCase;
         _adicionarLoteUseCase = adicionarLoteUseCase;
+        _definirImagemProdutoUseCase = definirImagemProdutoUseCase;
         _produtoRepository = produtoRepository;
+        _ambiente = ambiente;
     }
 
     [HttpPost]
@@ -80,6 +87,44 @@ public class ProdutoController : ControllerBase
         catch (ArgumentException ex)
         {
             return BadRequest(new { erro = ex.Message });
+        }
+    }
+
+    [HttpPost("{id:guid}/imagem")]
+    [Authorize(Roles = "Admin")]
+    [RequestSizeLimit(5_000_000)] // 5 MB
+    public async Task<IActionResult> DefinirImagem(Guid id, IFormFile arquivo)
+    {
+        if (arquivo is null || arquivo.Length == 0)
+            return BadRequest(new { erro = "Nenhum arquivo enviado." });
+
+        var extensoesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var extensao = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+
+        if (!extensoesPermitidas.Contains(extensao))
+            return BadRequest(new { erro = "Formato de imagem não suportado. Use JPG, PNG ou WEBP." });
+
+        var pastaUploads = Path.Combine(_ambiente.WebRootPath, "uploads", "produtos");
+        Directory.CreateDirectory(pastaUploads);
+
+        var nomeArquivo = $"{id}{extensao}";
+        var caminhoCompleto = Path.Combine(pastaUploads, nomeArquivo);
+
+        using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
+        {
+            await arquivo.CopyToAsync(stream);
+        }
+
+        var imagemUrl = $"/uploads/produtos/{nomeArquivo}";
+
+        try
+        {
+            await _definirImagemProdutoUseCase.ExecutarAsync(id, imagemUrl);
+            return Ok(new { imagemUrl });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { erro = ex.Message });
         }
     }
 }

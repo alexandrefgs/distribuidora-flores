@@ -8,7 +8,8 @@ public record ProdutoResponse(
     string Categoria,
     string UnidadeMedida,
     decimal PrecoUnitario,
-    int QuantidadeDisponivel
+    int QuantidadeDisponivel,
+    string? ImagemUrl
 )
 {
     public static ProdutoResponse FromDomain(Produto produto)
@@ -19,7 +20,8 @@ public record ProdutoResponse(
             produto.Categoria,
             produto.UnidadeMedida,
             produto.PrecoUnitario,
-            produto.QuantidadeDisponivel()
+            produto.QuantidadeDisponivel(),
+            produto.ImagemUrl
         );
     }
 }
