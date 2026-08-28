@@ -5,4 +5,5 @@ export interface Produto {
   unidadeMedida: string;
   precoUnitario: number;
   quantidadeDisponivel: number;
+  imagemUrl: string | null;
 }

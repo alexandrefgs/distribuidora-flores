@@ -34,28 +34,39 @@
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         @for (produto of produtos(); track produto.id) {
-          <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:border-purple-500/50 transition">
-            <div class="flex items-start justify-between mb-3">
-              <span class="text-xs font-medium text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full">
-                {{ produto.categoria }}
-              </span>
-              @if (produto.quantidadeDisponivel > 0) {
-                <span class="text-xs font-medium text-green-400">Disponível</span>
+          <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden hover:border-purple-500/50 transition">
+
+            <div class="h-40 bg-slate-800/50 flex items-center justify-center overflow-hidden">
+              @if (produto.imagemUrl) {
+                <img [src]="apiRootUrl + produto.imagemUrl" [alt]="produto.nome" class="w-full h-full object-cover" />
               } @else {
-                <span class="text-xs font-medium text-red-400">Sem estoque</span>
+                <span class="text-4xl opacity-30">🌸</span>
               }
             </div>
 
-            <h3 class="text-lg font-semibold text-white mb-1">{{ produto.nome }}</h3>
-            <p class="text-sm text-slate-400 mb-4">
-              {{ produto.quantidadeDisponivel }} {{ produto.unidadeMedida }}(s) disponíveis
-            </p>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <span class="text-xs font-medium text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full">
+                  {{ produto.categoria }}
+                </span>
+                @if (produto.quantidadeDisponivel > 0) {
+                  <span class="text-xs font-medium text-green-400">Disponível</span>
+                } @else {
+                  <span class="text-xs font-medium text-red-400">Sem estoque</span>
+                }
+              </div>
 
-            <div class="flex items-center justify-between">
-              <span class="text-xl font-bold text-white">
-                {{ produto.precoUnitario | currency:'BRL' }}
-              </span>
-              <span class="text-xs text-slate-500">/ {{ produto.unidadeMedida }}</span>
+              <h3 class="text-lg font-semibold text-white mb-1">{{ produto.nome }}</h3>
+              <p class="text-sm text-slate-400 mb-4">
+                {{ produto.quantidadeDisponivel }} {{ produto.unidadeMedida }}(s) disponíveis
+              </p>
+
+              <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-white">
+                  {{ produto.precoUnitario | currency:'BRL' }}
+                </span>
+                <span class="text-xs text-slate-500">/ {{ produto.unidadeMedida }}</span>
+              </div>
             </div>
           </div>
         }

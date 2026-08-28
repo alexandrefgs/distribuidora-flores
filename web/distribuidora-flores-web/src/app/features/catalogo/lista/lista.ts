@@ -4,6 +4,7 @@ import { CatalogoService } from '../../../core/services/catalogo.service';
 import { Produto } from '../../../core/models/catalogo.models';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { API_ROOT_URL } from '../../../core/config/api.config';
 
 @Component({
   selector: 'app-lista',
@@ -16,6 +17,7 @@ export class Lista implements OnInit {
   produtos = signal<Produto[]>([]);
   carregando = signal(true);
   erro = signal<string | null>(null);
+  apiRootUrl = API_ROOT_URL;
 
   constructor(
     private catalogoService: CatalogoService,

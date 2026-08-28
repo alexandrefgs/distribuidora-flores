@@ -1,3 +1,125 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 flex items-center justify-center">
-  <h1 class="text-3xl font-bold text-white">🛠️ Painel Admin (em construção)</h1>
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900">
+
+  <!-- Cabeçalho -->
+  <header class="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🌸</span>
+        <h1 class="text-xl font-bold text-white">Painel Admin</h1>
+      </div>
+      <button (click)="sair()" class="text-sm text-slate-400 hover:text-white transition">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8 space-y-10">
+
+    <!-- Formulário de novo produto -->
+    <section class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Cadastrar novo produto</h2>
+
+      <form (ngSubmit)="criarProduto()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <input
+          type="text"
+          [(ngModel)]="nome"
+          name="nome"
+          required
+          placeholder="Nome"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
+        />
+        <input
+          type="text"
+          [(ngModel)]="categoria"
+          name="categoria"
+          required
+          placeholder="Categoria"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
+        />
+        <input
+          type="text"
+          [(ngModel)]="unidadeMedida"
+          name="unidadeMedida"
+          required
+          placeholder="Unidade (ex: unidade, maço)"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
+        />
+        <input
+          type="number"
+          step="0.01"
+          [(ngModel)]="precoUnitario"
+          name="precoUnitario"
+          required
+          placeholder="Preço"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
+        />
+        <button
+          type="submit"
+          [disabled]="criandoProduto()"
+          class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-lg transition disabled:opacity-50 text-sm"
+        >
+          @if (criandoProduto()) {
+            Criando...
+          } @else {
+            + Adicionar
+          }
+        </button>
+      </form>
+
+      @if (erroFormulario()) {
+        <div class="mt-3 bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-2.5 rounded-lg">
+          {{ erroFormulario() }}
+        </div>
+      }
+    </section>
+
+    <!-- Lista de produtos -->
+    <section>
+      <h2 class="text-lg font-semibold text-white mb-4">Produtos cadastrados</h2>
+
+      @if (carregando()) {
+        <p class="text-slate-400">Carregando...</p>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          @for (produto of produtos(); track produto.id) {
+            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden">
+
+              <div class="h-40 bg-slate-800/50 flex items-center justify-center overflow-hidden relative">
+                @if (produto.imagemUrl) {
+                  <img [src]="apiRootUrl + produto.imagemUrl" [alt]="produto.nome" class="w-full h-full object-cover" />
+                } @else {
+                  <span class="text-4xl opacity-30">🌸</span>
+                }
+
+                @if (uploadEmAndamento() === produto.id) {
+                  <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <span class="text-white text-sm">Enviando...</span>
+                  </div>
+                }
+              </div>
+
+              <div class="p-4">
+                <h3 class="text-white font-semibold mb-1">{{ produto.nome }}</h3>
+                <p class="text-sm text-slate-400 mb-3">
+                  {{ produto.precoUnitario | currency:'BRL' }} / {{ produto.unidadeMedida }}
+                </p>
+
+                <label class="block">
+                  <span class="text-xs text-purple-400 hover:text-purple-300 cursor-pointer transition">
+                    📷 Alterar foto
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    (change)="aoSelecionarImagem($event, produto.id)"
+                    class="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </main>
 </div>
