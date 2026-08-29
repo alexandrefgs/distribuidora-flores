@@ -11,10 +11,9 @@ export const authGuard: CanActivateFn = (route) => {
     return false;
   }
 
-  // Se a rota define quais roles podem acessar, verifica
   const rolesPermitidas = route.data['roles'] as string[] | undefined;
   if (rolesPermitidas && !rolesPermitidas.includes(authService.currentUser()!.role)) {
-    router.navigate(['/']); // ou uma página de "acesso negado"
+    router.navigate(['/erro/403']);
     return false;
   }
 
