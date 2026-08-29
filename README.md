@@ -5,17 +5,20 @@
 ![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10-6DB33F?style=for-the-badge&logo=nuget&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-Express-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![Angular](https://img.shields.io/badge/Angular-planejado-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-20-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-56%20passing-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge)
 
 Marketplace B2B com ERP embutido, conectando uma distribuidora de flores a comerciantes (floriculturas). Permite que comerciantes façam pedidos direto do catálogo do distribuidor, enquanto o distribuidor gerencia estoque (com controle de validade), pedidos recebidos, clientes e frota através do módulo de ERP.
 
-Projeto pessoal desenvolvido com foco em boas práticas de arquitetura backend, pensado para portfólio.
+Projeto full-stack pessoal desenvolvido com foco em boas práticas de arquitetura, pensado para portfólio.
 
 ---
 
 ## 🏗️ Arquitetura
+
+### Backend
 
 O backend segue o padrão de **Monólito Modular** com **Clean Architecture** aplicada dentro de cada módulo — uma única API, organizada em módulos de domínio isolados, cada um com suas próprias camadas:
 
@@ -37,11 +40,22 @@ Modules/
 - Aplica inversão de dependência de verdade: o `Domain` não depende de nada externo (nem EF Core, nem ASP.NET); é a `Infrastructure` que depende do `Domain` através de interfaces
 - Módulos "de negócio" orquestram outros via interface (ex: `Pedidos` consulta `Clientes` e `Catalogo`; `Identidade` orquestra `Clientes` no registro combinado), sempre numa única direção de dependência
 
-## 📦 Módulos
+### Frontend
+
+SPA em **Angular** (standalone components, sem NgModules) com **Tailwind CSS**, organizada em:
+
+```
+src/app/
+├── core/          → serviços, interceptors, guards e modelos globais
+├── features/      → uma pasta por tela/funcionalidade (auth, catalogo, admin)
+└── shared/        → componentes reutilizáveis entre features
+```
+
+## 📦 Módulos do Backend
 
 | Módulo | Status | Descrição |
 |---|---|---|
-| **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade e cálculo automático de disponibilidade |
+| **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade, disponibilidade e upload de imagem |
 | **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
 | **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
 | **Frota** | ✅ Implementado | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
@@ -53,6 +67,7 @@ Modules/
 - Cadastro de produtos (nome, categoria, unidade de medida, preço)
 - Cadastro de lotes por produto, com data de validade
 - Cálculo automático de disponibilidade, considerando apenas lotes ainda válidos
+- Upload de imagem por produto (armazenamento local, servido como arquivo estático)
 
 **Clientes**
 - Cadastro de comerciante (pessoa física ou jurídica) com validação real de CPF/CNPJ, incluindo dígito verificador
@@ -77,23 +92,37 @@ Modules/
 - Autorização por role em todos os módulos: Admin tem acesso administrativo completo; Comerciante só acessa e cria recursos vinculados ao próprio cadastro (identificado via claim do token, nunca por dado enviado no corpo da requisição)
 - Seed automático de usuário Admin na primeira execução
 
+**Frontend**
+- Login e registro de comerciante, com visual moderno (glassmorphism, gradientes)
+- Renovação de sessão transparente: um interceptor HTTP detecta token expirado, renova via refresh token e repete a requisição original automaticamente, sem o usuário perceber
+- Rotas protegidas por autenticação e por role (guard de rota)
+- Catálogo de produtos com imagens, consumindo a API
+- Painel administrativo com cadastro de produtos e upload de imagem direto pela interface
+- Páginas de erro personalizadas (401, 403, 404, 500) com identidade visual própria
+
 **Geral**
-- API REST documentada via Swagger
+- API REST documentada via Swagger (com suporte a autenticação Bearer)
+- CORS configurado para o frontend consumir a API
 - Suíte de testes automatizados: 56 testes (unitários de domínio + integração via HTTP, incluindo fluxos autenticados)
 
 ## 🛠️ Tecnologias
 
+**Backend**
 - **.NET 10** / ASP.NET Core Web API
 - **Entity Framework Core** (SQL Server)
 - **Clean Architecture** por módulo
 - **JWT Bearer + Refresh Token** para autenticação/autorização
 - **BCrypt** para hash de senha
 - **Swagger / Swashbuckle** para documentação da API
-- **Angular** (planejado para o frontend)
+
+**Frontend**
+- **Angular** (standalone components)
+- **Tailwind CSS**
+- **RxJS** / Signals para estado reativo
 
 ## 🧪 Testes
 
-O projeto conta com uma suíte de 56 testes automatizados, dividida em dois níveis:
+O backend conta com uma suíte de 56 testes automatizados, dividida em dois níveis:
 
 - **Testes unitários** — cobrem regras de negócio isoladas do Domain (validação de CPF/CNPJ com dígito verificador, cálculo de disponibilidade de estoque, máquinas de estado de Pedido e Entrega), sem depender de banco de dados.
 - **Testes de integração** — sobem a API completa em memória (`WebApplicationFactory`) com um banco SQLite temporário, testando os fluxos principais via requisições HTTP reais — incluindo endpoints protegidos, usando um cliente HTTP autenticado gerado na própria suíte de testes.
@@ -107,30 +136,30 @@ dotnet test
 
 ## 🚀 Como rodar localmente
 
-### Pré-requisitos
-- [.NET SDK 10](https://dotnet.microsoft.com/download)
-- SQL Server (Express ou superior)
+### Backend
 
-### Passos
+**Pré-requisitos:** [.NET SDK 10](https://dotnet.microsoft.com/download), SQL Server (Express ou superior)
 
 ```bash
-# Clonar o repositório
-git clone https://github.com/alexandrefgs/distribuidora-flores.git
-cd distribuidora-flores/src/DistribuidoraFlores.Api
-
-# Restaurar pacotes
+cd src/DistribuidoraFlores.Api
 dotnet restore
-
-# Aplicar migrations
 dotnet ef database update
-
-# Rodar a API
 dotnet run
 ```
 
-A API sobe em `http://localhost:5014` (ou porta configurada) e redireciona automaticamente para o Swagger na raiz.
+A API sobe em `http://localhost:5014` e redireciona automaticamente para o Swagger na raiz. Um usuário **Admin** é criado automaticamente na primeira execução (`admin@distribuidoraflores.com` / `Admin@123`) — troque a senha assim que possível. Comerciantes se registram via `POST /api/auth/registrar-comerciante`.
 
-Um usuário **Admin** é criado automaticamente na primeira execução (`admin@distribuidoraflores.com` / `Admin@123`) — troque a senha assim que possível. Comerciantes se registram via `POST /api/auth/registrar-comerciante`.
+### Frontend
+
+**Pré-requisitos:** [Node.js](https://nodejs.org/) e Angular CLI (`npm install -g @angular/cli`)
+
+```bash
+cd web/distribuidora-flores-web
+npm install
+ng serve
+```
+
+A aplicação sobe em `http://localhost:4200` (é necessário que a API esteja rodando em paralelo).
 
 ## 🗺️ Roadmap
 
@@ -139,7 +168,9 @@ Um usuário **Admin** é criado automaticamente na primeira execução (`admin@d
 - [x] Módulo de Frota (veículos, motoristas, entregas)
 - [x] Suíte de testes automatizados (unitários + integração)
 - [x] Autenticação JWT + refresh token, autorização por role (Admin / Comerciante)
-- [ ] Frontend em Angular
+- [x] Frontend em Angular: autenticação, catálogo, painel admin com upload de imagem
+- [ ] Fluxo de compra completo (adicionar ao pedido pelo catálogo)
+- [ ] Autocomplete de CEP no cadastro de endereço
 - [ ] v2: rastreio de veículos em tempo real e app para motoristas
 
 ## 📄 Licença
