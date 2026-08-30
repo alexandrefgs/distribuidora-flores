@@ -11,6 +11,11 @@ export interface CriarProdutoRequest {
   precoUnitario: number;
 }
 
+export interface AdicionarLoteRequest {
+  quantidade: number;
+  dataValidade: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
   constructor(private http: HttpClient) {}
@@ -21,6 +26,10 @@ export class CatalogoService {
 
   criarProduto(request: CriarProdutoRequest): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${API_BASE_URL}/produtos`, request);
+  }
+
+  adicionarLote(produtoId: string, request: AdicionarLoteRequest): Observable<void> {
+    return this.http.post<void>(`${API_BASE_URL}/produtos/${produtoId}/lotes`, request);
   }
 
   enviarImagem(produtoId: string, arquivo: File): Observable<{ imagemUrl: string }> {

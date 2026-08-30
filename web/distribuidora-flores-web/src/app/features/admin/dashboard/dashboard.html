@@ -1,6 +1,5 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900">
 
-  <!-- Cabeçalho -->
   <header class="border-b border-white/10 bg-white/5 backdrop-blur-xl sticky top-0 z-10">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -15,54 +14,21 @@
 
   <main class="max-w-6xl mx-auto px-6 py-8 space-y-10">
 
-    <!-- Formulário de novo produto -->
     <section class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
       <h2 class="text-lg font-semibold text-white mb-4">Cadastrar novo produto</h2>
 
       <form (ngSubmit)="criarProduto()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <input
-          type="text"
-          [(ngModel)]="nome"
-          name="nome"
-          required
-          placeholder="Nome"
-          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
-        />
-        <input
-          type="text"
-          [(ngModel)]="categoria"
-          name="categoria"
-          required
-          placeholder="Categoria"
-          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
-        />
-        <input
-          type="text"
-          [(ngModel)]="unidadeMedida"
-          name="unidadeMedida"
-          required
-          placeholder="Unidade (ex: unidade, maço)"
-          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
-        />
-        <input
-          type="number"
-          step="0.01"
-          [(ngModel)]="precoUnitario"
-          name="precoUnitario"
-          required
-          placeholder="Preço"
-          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm"
-        />
-        <button
-          type="submit"
-          [disabled]="criandoProduto()"
-          class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-lg transition disabled:opacity-50 text-sm"
-        >
-          @if (criandoProduto()) {
-            Criando...
-          } @else {
-            + Adicionar
-          }
+        <input type="text" [(ngModel)]="nome" name="nome" required placeholder="Nome"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm" />
+        <input type="text" [(ngModel)]="categoria" name="categoria" required placeholder="Categoria"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm" />
+        <input type="text" [(ngModel)]="unidadeMedida" name="unidadeMedida" required placeholder="Unidade (ex: unidade, maço)"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm" />
+        <input type="number" step="0.01" [(ngModel)]="precoUnitario" name="precoUnitario" required placeholder="Preço"
+          class="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm" />
+        <button type="submit" [disabled]="criandoProduto()"
+          class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-lg transition disabled:opacity-50 text-sm">
+          @if (criandoProduto()) { Criando... } @else { + Adicionar }
         </button>
       </form>
 
@@ -73,7 +39,6 @@
       }
     </section>
 
-    <!-- Lista de produtos -->
     <section>
       <h2 class="text-lg font-semibold text-white mb-4">Produtos cadastrados</h2>
 
@@ -99,22 +64,54 @@
               </div>
 
               <div class="p-4">
-                <h3 class="text-white font-semibold mb-1">{{ produto.nome }}</h3>
+                <div class="flex items-center justify-between mb-1">
+                  <h3 class="text-white font-semibold">{{ produto.nome }}</h3>
+                  @if (produto.quantidadeDisponivel > 0) {
+                    <span class="text-xs font-medium text-green-400">{{ produto.quantidadeDisponivel }} em estoque</span>
+                  } @else {
+                    <span class="text-xs font-medium text-red-400">Sem estoque</span>
+                  }
+                </div>
                 <p class="text-sm text-slate-400 mb-3">
                   {{ produto.precoUnitario | currency:'BRL' }} / {{ produto.unidadeMedida }}
                 </p>
 
-                <label class="block">
-                  <span class="text-xs text-purple-400 hover:text-purple-300 cursor-pointer transition">
-                    📷 Alterar foto
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    (change)="aoSelecionarImagem($event, produto.id)"
-                    class="hidden"
-                  />
-                </label>
+                <div class="flex items-center gap-4 mb-3">
+                  <label class="block">
+                    <span class="text-xs text-purple-400 hover:text-purple-300 cursor-pointer transition">
+                      📷 Alterar foto
+                    </span>
+                    <input type="file" accept="image/jpeg,image/png,image/webp"
+                      (change)="aoSelecionarImagem($event, produto.id)" class="hidden" />
+                  </label>
+
+                  <button (click)="abrirFormLote(produto.id)" class="text-xs text-purple-400 hover:text-purple-300 transition">
+                    📦 Adicionar estoque
+                  </button>
+                </div>
+
+                @if (produtoComFormLoteAberto() === produto.id) {
+                  <div class="bg-black/20 rounded-lg p-3 space-y-2 border border-white/10">
+                    <input type="number" [(ngModel)]="quantidadeLote" placeholder="Quantidade"
+                      class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+                    <input type="date" [(ngModel)]="dataValidadeLote"
+                      class="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-purple-500" />
+
+                    @if (erroLote()) {
+                      <p class="text-red-400 text-xs">{{ erroLote() }}</p>
+                    }
+
+                    <div class="flex gap-2">
+                      <button (click)="adicionarLote(produto.id)" [disabled]="adicionandoLote()"
+                        class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-semibold py-1.5 rounded transition disabled:opacity-50">
+                        @if (adicionandoLote()) { Salvando... } @else { Salvar }
+                      </button>
+                      <button (click)="fecharFormLote()" class="px-3 text-slate-400 hover:text-white text-xs transition">
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                }
               </div>
             </div>
           }

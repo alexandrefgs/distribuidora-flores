@@ -53,11 +53,30 @@ public class Produto
         Ativo = false;
     }
 
+    public void Ativar()
+    {
+        Ativo = true;
+    }
+
     public void DefinirImagem(string imagemUrl)
     {
         if (string.IsNullOrWhiteSpace(imagemUrl))
             throw new ArgumentException("URL da imagem inválida.");
 
         ImagemUrl = imagemUrl;
+    }
+
+    public void AtualizarDados(string nome, string categoria, string unidadeMedida, decimal precoUnitario)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("Nome do produto é obrigatório.");
+
+        if (precoUnitario <= 0)
+            throw new ArgumentException("Preço deve ser maior que zero.");
+
+        Nome = nome;
+        Categoria = categoria;
+        UnidadeMedida = unidadeMedida;
+        PrecoUnitario = precoUnitario;
     }
 }

@@ -15,6 +15,8 @@ public class ProdutoController : ControllerBase
     private readonly CriarProdutoUseCase _criarProdutoUseCase;
     private readonly AdicionarLoteUseCase _adicionarLoteUseCase;
     private readonly DefinirImagemProdutoUseCase _definirImagemProdutoUseCase;
+    private readonly AtualizarProdutoUseCase _atualizarProdutoUseCase;
+    private readonly ExcluirProdutoUseCase _excluirProdutoUseCase;
     private readonly IProdutoRepository _produtoRepository;
     private readonly IWebHostEnvironment _ambiente;
 
@@ -22,12 +24,16 @@ public class ProdutoController : ControllerBase
         CriarProdutoUseCase criarProdutoUseCase,
         AdicionarLoteUseCase adicionarLoteUseCase,
         DefinirImagemProdutoUseCase definirImagemProdutoUseCase,
+        AtualizarProdutoUseCase atualizarProdutoUseCase,
+        ExcluirProdutoUseCase excluirProdutoUseCase,
         IProdutoRepository produtoRepository,
         IWebHostEnvironment ambiente)
     {
         _criarProdutoUseCase = criarProdutoUseCase;
         _adicionarLoteUseCase = adicionarLoteUseCase;
         _definirImagemProdutoUseCase = definirImagemProdutoUseCase;
+        _atualizarProdutoUseCase = atualizarProdutoUseCase;
+        _excluirProdutoUseCase = excluirProdutoUseCase;
         _produtoRepository = produtoRepository;
         _ambiente = ambiente;
     }
@@ -69,6 +75,47 @@ public class ProdutoController : ControllerBase
     {
         var produtos = await _produtoRepository.ListarAtivosAsync();
         return Ok(produtos.Select(ProdutoResponse.FromDomain));
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Atualizar(Guid id, [FromBody] AtualizarProdutoRequest request)
+    {
+        try
+        {
+            await _atualizarProdutoUseCase.ExecutarAsync(
+                id,
+                request.Nome,
+                request.Categoria,
+                request.UnidadeMedida,
+                request.PrecoUnitario
+            );
+
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { erro = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { erro = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Excluir(Guid id)
+    {
+        try
+        {
+            await _excluirProdutoUseCase.ExecutarAsync(id);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { erro = ex.Message });
+        }
     }
 
     [HttpPost("{id:guid}/lotes")]

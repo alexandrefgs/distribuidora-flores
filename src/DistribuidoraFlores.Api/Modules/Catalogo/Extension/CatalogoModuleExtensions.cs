@@ -12,6 +12,8 @@ public static class CatalogoModuleExtensions
         services.AddScoped<CriarProdutoUseCase>();
         services.AddScoped<AdicionarLoteUseCase>();
         services.AddScoped<DefinirImagemProdutoUseCase>();
+        services.AddScoped<AtualizarProdutoUseCase>();
+        services.AddScoped<ExcluirProdutoUseCase>();
 
         return services;
     }

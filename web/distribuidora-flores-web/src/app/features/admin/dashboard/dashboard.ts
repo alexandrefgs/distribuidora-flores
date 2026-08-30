@@ -27,8 +27,15 @@ export class Dashboard implements OnInit {
   criandoProduto = signal(false);
   erroFormulario = signal<string | null>(null);
 
-  // Upload de imagem por produto (guarda qual produto está com upload em andamento)
+  // Upload de imagem por produto
   uploadEmAndamento = signal<string | null>(null);
+
+  // Formulário de lote (estoque) — controla qual produto tem o form aberto
+  produtoComFormLoteAberto = signal<string | null>(null);
+  quantidadeLote: number | null = null;
+  dataValidadeLote = '';
+  adicionandoLote = signal(false);
+  erroLote = signal<string | null>(null);
 
   constructor(
     private catalogoService: CatalogoService,
@@ -104,7 +111,44 @@ export class Dashboard implements OnInit {
       },
     });
 
-    input.value = ''; // permite selecionar o mesmo arquivo de novo depois, se precisar
+    input.value = '';
+  }
+
+  abrirFormLote(produtoId: string): void {
+    this.produtoComFormLoteAberto.set(produtoId);
+    this.quantidadeLote = null;
+    this.dataValidadeLote = '';
+    this.erroLote.set(null);
+  }
+
+  fecharFormLote(): void {
+    this.produtoComFormLoteAberto.set(null);
+  }
+
+  adicionarLote(produtoId: string): void {
+    if (!this.quantidadeLote || !this.dataValidadeLote) {
+      return;
+    }
+
+    this.erroLote.set(null);
+    this.adicionandoLote.set(true);
+
+    this.catalogoService
+      .adicionarLote(produtoId, {
+        quantidade: this.quantidadeLote,
+        dataValidade: new Date(this.dataValidadeLote).toISOString(),
+      })
+      .subscribe({
+        next: () => {
+          this.adicionandoLote.set(false);
+          this.fecharFormLote();
+          this.carregarProdutos();
+        },
+        error: (err) => {
+          this.adicionandoLote.set(false);
+          this.erroLote.set(err?.error?.erro ?? 'Não foi possível adicionar o estoque.');
+        },
+      });
   }
 
   sair(): void {
