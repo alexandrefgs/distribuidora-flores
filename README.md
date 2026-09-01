@@ -10,7 +10,7 @@
 ![Tests](https://img.shields.io/badge/tests-56%20passing-brightgreen?style=for-the-badge&logo=xunit&logoColor=white)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=for-the-badge)
 
-Marketplace B2B com ERP embutido, conectando uma distribuidora de flores a comerciantes (floriculturas). Permite que comerciantes façam pedidos direto do catálogo do distribuidor, enquanto o distribuidor gerencia estoque (com controle de validade), pedidos recebidos, clientes e frota através do módulo de ERP.
+Marketplace B2B com ERP embutido, conectando uma distribuidora de flores a comerciantes (floriculturas). Comerciantes navegam o catálogo, montam um carrinho e finalizam pedidos, enquanto o distribuidor gerencia produtos, estoque, clientes e frota através de um painel administrativo.
 
 Projeto full-stack pessoal desenvolvido com foco em boas práticas de arquitetura, pensado para portfólio.
 
@@ -20,7 +20,7 @@ Projeto full-stack pessoal desenvolvido com foco em boas práticas de arquitetur
 
 ### Backend
 
-O backend segue o padrão de **Monólito Modular** com **Clean Architecture** aplicada dentro de cada módulo — uma única API, organizada em módulos de domínio isolados, cada um com suas próprias camadas:
+Monólito Modular com Clean Architecture aplicada dentro de cada módulo — uma única API, organizada em módulos de domínio isolados, cada um com suas próprias camadas:
 
 ```
 Modules/
@@ -42,20 +42,20 @@ Modules/
 
 ### Frontend
 
-SPA em **Angular** (standalone components, sem NgModules) com **Tailwind CSS**, organizada em:
+SPA em Angular (standalone components, sem NgModules) com Tailwind CSS:
 
 ```
 src/app/
 ├── core/          → serviços, interceptors, guards e modelos globais
-├── features/      → uma pasta por tela/funcionalidade (auth, catalogo, admin)
-└── shared/        → componentes reutilizáveis entre features
+├── features/      → uma pasta por tela/funcionalidade (auth, catalogo, carrinho, admin)
+└── shared/        → componentes e diretivas reutilizáveis entre features
 ```
 
 ## 📦 Módulos do Backend
 
 | Módulo | Status | Descrição |
 |---|---|---|
-| **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade, disponibilidade e upload de imagem |
+| **Catalogo** | ✅ Implementado | Produtos e lotes, com controle de validade, disponibilidade, upload de imagem, edição e exclusão (soft delete) |
 | **Clientes** | ✅ Implementado | Cadastro com validação real de CPF/CNPJ (dígito verificador), ativação/desativação |
 | **Pedidos** | ✅ Implementado | Criação orquestrando Clientes e Catalogo, máquina de estados, preço congelado |
 | **Frota** | ✅ Implementado | Veículos, motoristas e entregas — base para rastreio em tempo real e app do motorista (v2) |
@@ -64,7 +64,7 @@ src/app/
 ## ✨ Funcionalidades implementadas
 
 **Catalogo**
-- Cadastro de produtos (nome, categoria, unidade de medida, preço)
+- Cadastro, edição e exclusão (soft delete) de produtos
 - Cadastro de lotes por produto, com data de validade
 - Cálculo automático de disponibilidade, considerando apenas lotes ainda válidos
 - Upload de imagem por produto (armazenamento local, servido como arquivo estático)
@@ -97,7 +97,8 @@ src/app/
 - Renovação de sessão transparente: um interceptor HTTP detecta token expirado, renova via refresh token e repete a requisição original automaticamente, sem o usuário perceber
 - Rotas protegidas por autenticação e por role (guard de rota)
 - Catálogo de produtos com imagens, consumindo a API
-- Painel administrativo com cadastro de produtos e upload de imagem direto pela interface
+- Carrinho de compras (signals): adicionar, ajustar quantidade, remover itens e finalizar pedido
+- Painel administrativo completo: cadastro, edição e exclusão de produtos, upload de imagem, adição de estoque com datepicker customizado
 - Páginas de erro personalizadas (401, 403, 404, 500) com identidade visual própria
 
 **Geral**
@@ -116,9 +117,10 @@ src/app/
 - **Swagger / Swashbuckle** para documentação da API
 
 **Frontend**
-- **Angular** (standalone components)
+- **Angular** (standalone components, signals)
 - **Tailwind CSS**
-- **RxJS** / Signals para estado reativo
+- **Flatpickr** (seletor de data customizado)
+- **RxJS**
 
 ## 🧪 Testes
 
@@ -168,8 +170,8 @@ A aplicação sobe em `http://localhost:4200` (é necessário que a API esteja r
 - [x] Módulo de Frota (veículos, motoristas, entregas)
 - [x] Suíte de testes automatizados (unitários + integração)
 - [x] Autenticação JWT + refresh token, autorização por role (Admin / Comerciante)
-- [x] Frontend em Angular: autenticação, catálogo, painel admin com upload de imagem
-- [ ] Fluxo de compra completo (adicionar ao pedido pelo catálogo)
+- [x] Frontend em Angular: autenticação, catálogo, carrinho, painel admin completo (CRUD de produtos, estoque, imagens)
+- [ ] Painel Admin de Pedidos (gerenciar status pela interface)
 - [ ] Autocomplete de CEP no cadastro de endereço
 - [ ] v2: rastreio de veículos em tempo real e app para motoristas
 
