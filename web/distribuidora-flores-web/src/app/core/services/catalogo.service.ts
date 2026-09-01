@@ -11,6 +11,13 @@ export interface CriarProdutoRequest {
   precoUnitario: number;
 }
 
+export interface AtualizarProdutoRequest {
+  nome: string;
+  categoria: string;
+  unidadeMedida: string;
+  precoUnitario: number;
+}
+
 export interface AdicionarLoteRequest {
   quantidade: number;
   dataValidade: string;
@@ -26,6 +33,14 @@ export class CatalogoService {
 
   criarProduto(request: CriarProdutoRequest): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${API_BASE_URL}/produtos`, request);
+  }
+
+  atualizarProduto(produtoId: string, request: AtualizarProdutoRequest): Observable<void> {
+    return this.http.put<void>(`${API_BASE_URL}/produtos/${produtoId}`, request);
+  }
+
+  excluirProduto(produtoId: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/produtos/${produtoId}`);
   }
 
   adicionarLote(produtoId: string, request: AdicionarLoteRequest): Observable<void> {

@@ -6,11 +6,12 @@ import { Produto } from '../../../core/models/catalogo.models';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { API_ROOT_URL } from '../../../core/config/api.config';
+import { DatepickerDirective } from '../../../shared/directives/datepicker.directive';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DatepickerDirective],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -30,12 +31,25 @@ export class Dashboard implements OnInit {
   // Upload de imagem por produto
   uploadEmAndamento = signal<string | null>(null);
 
-  // Formulário de lote (estoque) — controla qual produto tem o form aberto
+  // Formulário de lote (estoque)
   produtoComFormLoteAberto = signal<string | null>(null);
   quantidadeLote: number | null = null;
   dataValidadeLote = '';
   adicionandoLote = signal(false);
   erroLote = signal<string | null>(null);
+
+  // Edição de produto
+  produtoEmEdicao = signal<string | null>(null);
+  nomeEdicao = '';
+  categoriaEdicao = '';
+  unidadeMedidaEdicao = '';
+  precoUnitarioEdicao: number | null = null;
+  salvandoEdicao = signal(false);
+  erroEdicao = signal<string | null>(null);
+
+  // Exclusão de produto
+  produtoParaExcluir = signal<string | null>(null);
+  excluindo = signal(false);
 
   constructor(
     private catalogoService: CatalogoService,
@@ -149,6 +163,74 @@ export class Dashboard implements OnInit {
           this.erroLote.set(err?.error?.erro ?? 'Não foi possível adicionar o estoque.');
         },
       });
+  }
+
+  abrirEdicao(produto: Produto): void {
+    this.produtoEmEdicao.set(produto.id);
+    this.nomeEdicao = produto.nome;
+    this.categoriaEdicao = produto.categoria;
+    this.unidadeMedidaEdicao = produto.unidadeMedida;
+    this.precoUnitarioEdicao = produto.precoUnitario;
+    this.erroEdicao.set(null);
+  }
+
+  fecharEdicao(): void {
+    this.produtoEmEdicao.set(null);
+  }
+
+  salvarEdicao(produtoId: string): void {
+    if (!this.nomeEdicao || !this.categoriaEdicao || !this.unidadeMedidaEdicao || !this.precoUnitarioEdicao) {
+      return;
+    }
+
+    this.erroEdicao.set(null);
+    this.salvandoEdicao.set(true);
+
+    this.catalogoService
+      .atualizarProduto(produtoId, {
+        nome: this.nomeEdicao,
+        categoria: this.categoriaEdicao,
+        unidadeMedida: this.unidadeMedidaEdicao,
+        precoUnitario: this.precoUnitarioEdicao,
+      })
+      .subscribe({
+        next: () => {
+          this.salvandoEdicao.set(false);
+          this.fecharEdicao();
+          this.carregarProdutos();
+        },
+        error: (err) => {
+          this.salvandoEdicao.set(false);
+          this.erroEdicao.set(err?.error?.erro ?? 'Não foi possível salvar as alterações.');
+        },
+      });
+  }
+
+  pedirConfirmacaoExclusao(produtoId: string): void {
+    this.produtoParaExcluir.set(produtoId);
+  }
+
+  cancelarExclusao(): void {
+    this.produtoParaExcluir.set(null);
+  }
+
+  confirmarExclusao(): void {
+    const produtoId = this.produtoParaExcluir();
+    if (!produtoId) return;
+
+    this.excluindo.set(true);
+
+    this.catalogoService.excluirProduto(produtoId).subscribe({
+      next: () => {
+        this.excluindo.set(false);
+        this.produtoParaExcluir.set(null);
+        this.carregarProdutos();
+      },
+      error: () => {
+        this.excluindo.set(false);
+        this.produtoParaExcluir.set(null);
+      },
+    });
   }
 
   sair(): void {
